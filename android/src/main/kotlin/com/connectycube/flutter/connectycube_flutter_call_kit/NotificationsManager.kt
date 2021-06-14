@@ -32,6 +32,94 @@ fun cancelCallNotification(context: Context, callId: String) {
     notificationManager.cancel(callId.hashCode())
 }
 
+fun showOngoingCallNotification(
+    context: Context, callId: String, callType: Int, callInitiatorId: Int,
+    callInitiatorName: String, callOpponents: ArrayList<Int>
+) {
+    val notificationManager = NotificationManagerCompat.from(context)
+
+    val intent = getLaunchIntent(context)
+
+    val pendingIntent = PendingIntent.getActivity(
+        context,
+        callId.hashCode(),
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT
+    )
+
+    val ringtone: Uri = RingtoneManager.getActualDefaultRingtoneUri(
+        context.applicationContext,
+        RingtoneManager.TYPE_RINGTONE
+    )
+
+    val callTypeTitle =
+        String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
+
+    val builder: NotificationCompat.Builder =
+        createOngoingCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent)
+
+    // Add actions
+    addCallRejectAction(
+        context,
+        builder,
+        callId,
+        callType,
+        callInitiatorId,
+        callInitiatorName,
+        callOpponents
+    )
+
+    // Add full screen intent (to show on lock screen)
+    addCallFullScreenIntent(
+        context,
+        builder,
+        callId,
+        callType,
+        callInitiatorId,
+        callInitiatorName,
+        callOpponents
+    )
+
+    // Add action when delete call notification
+    addCancelCallNotificationIntent(
+        context,
+        builder,
+        callId,
+        callType,
+        callInitiatorId,
+        callInitiatorName
+    )
+
+    // Set small icon for notification
+    setNotificationSmallIcon(context, builder)
+
+    // Set notification color accent
+    setNotificationColor(context, builder)
+
+//    createCallNotificationChannel(notificationManager, soundUri)
+
+    notificationManager.notify(callId.hashCode(), builder.build())
+}
+
+fun createOngoingCallNotification(
+    context: Context,
+    title: String,
+    text: String?,
+    pendingIntent: PendingIntent,
+): NotificationCompat.Builder {
+    val notificationBuilder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
+    notificationBuilder
+        .setContentTitle(title)
+        .setContentText(text)
+        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        .setAutoCancel(true)
+        .setOngoing(true)
+        .setContentIntent(pendingIntent)
+        .setVibrate(LongArray(30) { 1000L })
+        .setPriority(NotificationCompat.PRIORITY_MAX)
+    return notificationBuilder
+}
+
 fun showCallNotification(
         context: Context, callId: String, callType: Int, callInitiatorId: Int,
         callInitiatorName: String, callOpponents: ArrayList<Int>

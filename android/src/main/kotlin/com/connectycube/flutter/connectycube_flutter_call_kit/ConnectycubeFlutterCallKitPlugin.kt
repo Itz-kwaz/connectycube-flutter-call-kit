@@ -1,6 +1,7 @@
 package com.connectycube.flutter.connectycube_flutter_call_kit
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -65,6 +66,42 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
                     showCallNotification(applicationContext!!, callId, callType, callInitiatorId, callInitiatorName, callOpponents)
 
                     saveCallState(callId, CALL_STATE_PENDING)
+
+                    result.success(null)
+                } catch (e: Exception) {
+                    result.error("ERROR", e.message, "")
+                }
+            }
+
+            "showOngoingCallNotification" -> {
+                try {
+                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> = call.arguments as Map<String, Any>
+                    val callId = arguments["session_id"] as String
+
+                    if (CALL_STATE_ACCEPTED != getCallState(callId)) {
+                        result.success(null)
+                        return
+                    }
+
+                    val callType = arguments["call_type"] as Int
+                    val callInitiatorId = arguments["caller_id"] as Int
+                    val callInitiatorName = arguments["caller_name"] as String
+                    val callOpponents = ArrayList((arguments["call_opponents"] as String)
+                        .split(',')
+                        .map { it.toInt() })
+
+                    val extras = Bundle()
+
+                    extras.putString("call_id", callId)
+                    extras.putInt("call_type", callType)
+                    extras.putInt("caller_id", callInitiatorId)
+                    extras.putString("caller_name", callInitiatorName)
+                    extras.putIntegerArrayList("call_opponents", callOpponents)
+
+                    val serviceIntent: Intent = Intent(applicationContext!!, CallForegroundService::class.java)
+                    serviceIntent.putExtras(extras)
+
+                    toggleService(serviceIntent)
 
                     result.success(null)
                 } catch (e: Exception) {
@@ -140,6 +177,26 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
             else ->
                 result.notImplemented()
 
+        }
+    }
+
+    private fun toggleService(serviceIntent: Intent){
+        if(isCallServiceRunning(CallForegroundService::class.java)){
+            stopService(serviceIntent)
+        }else{
+            startService(serviceIntent)
+        }
+    }
+
+    private fun isCallServiceRunning(mClass: Class<CallForegroundService>): Boolean{
+        val manager: ActivityManager = getSystemService(
+            Context.ACTIVITY_SERVICE
+        ) as ActivityManager
+
+        for(service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)){
+            if(mClass.name.equals(service.service.className)){
+                return true
+            }
         }
     }
 
