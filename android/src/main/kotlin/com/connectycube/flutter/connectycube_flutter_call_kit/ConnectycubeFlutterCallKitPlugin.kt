@@ -98,7 +98,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
                     extras.putString("caller_name", callInitiatorName)
                     extras.putIntegerArrayList("call_opponents", callOpponents)
 
-                    val serviceIntent: Intent = Intent(applicationContext!!, CallForegroundService::class.java)
+                    val serviceIntent = Intent(applicationContext!!, CallForegroundService::class.java)
                     serviceIntent.putExtras(extras)
 
                     toggleService(serviceIntent)
@@ -182,14 +182,14 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
 
     private fun toggleService(serviceIntent: Intent){
         if(isCallServiceRunning(CallForegroundService::class.java)){
-            stopService(serviceIntent)
+            applicationContext?.stopService(serviceIntent)
         }else{
-            startService(serviceIntent)
+            applicationContext?.startService(serviceIntent)
         }
     }
 
     private fun isCallServiceRunning(mClass: Class<CallForegroundService>): Boolean{
-        val manager: ActivityManager = getSystemService(
+        val manager: ActivityManager = applicationContext?.getSystemService(
             Context.ACTIVITY_SERVICE
         ) as ActivityManager
 
@@ -198,6 +198,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
                 return true
             }
         }
+
+        return false
     }
 
     private fun registerCallStateReceiver() {

@@ -105,7 +105,7 @@ fun createOngoingCallNotification(
     context: Context,
     title: String,
     text: String?,
-    pendingIntent: PendingIntent,
+    pendingIntent: PendingIntent
 ): NotificationCompat.Builder {
     val notificationBuilder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
     notificationBuilder
