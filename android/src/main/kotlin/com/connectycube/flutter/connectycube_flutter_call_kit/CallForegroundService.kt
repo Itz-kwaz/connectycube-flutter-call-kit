@@ -14,18 +14,8 @@ class CallForegroundService : Service(){
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Log.d("CallForeground", "calleddddddddddddddddddddddddddddddddddddd")
 
         val extras = intent?.extras
-
-        if(intent != null){
-            Log.d("CallForeground", "intentttttttttttttttttttttttttttttttttttt")
-        }
-
-        if(extras != null){
-            Log.d("CallForeground", "extrassssssssssssssssssssssssssssssssssss")
-            Log.d("CallForeground", extras?.getString("call_id") as String)
-        }
 
         val callId = extras?.getString("call_id") as String
         val callType = extras.getInt("call_type") as Int

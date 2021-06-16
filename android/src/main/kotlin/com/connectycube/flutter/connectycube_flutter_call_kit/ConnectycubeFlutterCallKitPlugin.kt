@@ -101,7 +101,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
                     val serviceIntent = Intent(applicationContext!!, CallForegroundService::class.java)
                     serviceIntent.putExtras(extras)
 
-                    toggleService(serviceIntent)
+                    toggleCallService(serviceIntent)
 
                     result.success(null)
                 } catch (e: Exception) {
@@ -180,7 +180,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
         }
     }
 
-    private fun toggleService(serviceIntent: Intent){
+    private fun toggleCallService(serviceIntent: Intent){
         if(isCallServiceRunning(CallForegroundService::class.java)){
             applicationContext?.stopService(serviceIntent)
         }else{

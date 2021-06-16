@@ -223,7 +223,7 @@ fun createCallNotification(
             .setContentTitle(title)
             .setContentText(text)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setAutoCancel(true)
+            .setAutoCancel(false)
             .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_CALL)
             .setContentIntent(pendingIntent)
