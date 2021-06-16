@@ -9,6 +9,7 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.WindowManager
 import androidx.annotation.Keep
 import androidx.annotation.NonNull
@@ -182,7 +183,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
 
     private fun toggleCallService(serviceIntent: Intent){
         if(isCallServiceRunning(CallForegroundService::class.java)){
-            applicationContext?.stopService(serviceIntent)
+            val stoppedService = applicationContext?.stopService(serviceIntent)
+            Log.d("STOPPED SERVICE", stoppedService.toString())
         }else{
             applicationContext?.startService(serviceIntent)
         }
