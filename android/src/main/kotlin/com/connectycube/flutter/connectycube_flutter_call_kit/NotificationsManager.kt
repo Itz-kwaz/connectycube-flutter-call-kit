@@ -47,11 +47,6 @@ fun showOngoingCallNotification(
         PendingIntent.FLAG_UPDATE_CURRENT
     )
 
-    val ringtone: Uri = RingtoneManager.getActualDefaultRingtoneUri(
-        context.applicationContext,
-        RingtoneManager.TYPE_RINGTONE
-    )
-
     val callTypeTitle =
         String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
 
@@ -60,17 +55,6 @@ fun showOngoingCallNotification(
 
     // Add actions
     addCallRejectAction(
-        context,
-        builder,
-        callId,
-        callType,
-        callInitiatorId,
-        callInitiatorName,
-        callOpponents
-    )
-
-    // Add full screen intent (to show on lock screen)
-    addCallFullScreenIntent(
         context,
         builder,
         callId,
@@ -112,11 +96,8 @@ fun createOngoingCallNotification(
         .setContentTitle(title)
         .setContentText(text)
         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-        .setAutoCancel(true)
         .setOngoing(true)
         .setContentIntent(pendingIntent)
-        .setVibrate(LongArray(30) { 1000L })
-        .setPriority(NotificationCompat.PRIORITY_MAX)
     return notificationBuilder
 }
 
