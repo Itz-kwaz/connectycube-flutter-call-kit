@@ -12,6 +12,7 @@ const val ACTION_CALL_NOTIFICATION_CANCELED = "action_call_notification_canceled
 const val ACTION_CALL_ENDED = "action_call_ended"
 
 const val CALL_TYPE_PLACEHOLDER = "Incoming %s call"
+const val ONGOING_CALL_TYPE_PLACEHOLDER = "Ongoing %s call"
 
 const val CALL_STATE_PENDING: String = "pending"
 const val CALL_STATE_ACCEPTED: String = "accepted"

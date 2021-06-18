@@ -2,6 +2,7 @@ package com.connectycube.flutter.connectycube_flutter_call_kit
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -50,6 +51,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
         when (call.method) {
             "showCallNotification" -> {
                 try {
+                    cancelAllCallNotification(applicationContext!!)
+
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> = call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
@@ -75,6 +78,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
             }
 
             "showOngoingCallNotification" -> {
+                cancelAllCallNotification(applicationContext!!)
+
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> = call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String

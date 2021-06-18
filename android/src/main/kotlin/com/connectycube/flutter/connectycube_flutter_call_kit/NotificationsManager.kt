@@ -48,7 +48,7 @@ fun showOngoingCallNotification(
     )
 
     val callTypeTitle =
-        String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
+        String.format(ONGOING_CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
 
     val builder: NotificationCompat.Builder =
         createOngoingCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent)
@@ -95,7 +95,6 @@ fun createOngoingCallNotification(
     notificationBuilder
         .setContentTitle(title)
         .setContentText(text)
-        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         .setOngoing(true)
         .setContentIntent(pendingIntent)
     return notificationBuilder
