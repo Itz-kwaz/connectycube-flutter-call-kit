@@ -22,6 +22,7 @@ class CallForegroundService : Service(){
         val callInitiatorId = extras.getInt("caller_id") as Int
         val callInitiatorName = extras.getString("caller_name") as String
         val callOpponents = extras.getIntegerArrayList("call_opponents") as ArrayList<Int>
+        val userInfo = extras.getString("user_info") as String
 
         showOngoingCallNotification(
             applicationContext!!,
@@ -29,7 +30,8 @@ class CallForegroundService : Service(){
             callType,
             callInitiatorId,
             callInitiatorName,
-            callOpponents
+            callOpponents,
+            userInfo
         )
 
         return START_STICKY
