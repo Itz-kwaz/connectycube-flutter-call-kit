@@ -25,6 +25,76 @@ fun cancelCallNotification(context: Context, callId: String) {
     notificationManager.cancel(callId.hashCode())
 }
 
+fun showOngoingCallNotification(
+    context: Context, callId: String, callType: Int, callInitiatorId: Int,
+    callInitiatorName: String, callOpponents: ArrayList<Int>, userInfo: String
+) {
+    val notificationManager = NotificationManagerCompat.from(context)
+
+    val intent = getLaunchIntent(context)
+
+    val pendingIntent = PendingIntent.getActivity(
+        context,
+        callId.hashCode(),
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT
+    )
+
+    val callTypeTitle =
+        String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
+
+    val builder: NotificationCompat.Builder =
+        createOngoingCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent)
+
+    // Add actions
+    addCallRejectAction(
+        context,
+        builder,
+        callId,
+        callType,
+        callInitiatorId,
+        callInitiatorName,
+        callOpponents,
+        userInfo
+    )
+
+    // Add action when delete call notification
+    addCancelCallNotificationIntent(
+        context,
+        builder,
+        callId,
+        callType,
+        callInitiatorId,
+        callInitiatorName,
+        userInfo
+    )
+
+    // Set small icon for notification
+    setNotificationSmallIcon(context, builder)
+
+    // Set notification color accent
+    setNotificationColor(context, builder)
+
+//    createCallNotificationChannel(notificationManager, soundUri)
+
+    notificationManager.notify(callId.hashCode(), builder.build())
+}
+
+fun createOngoingCallNotification(
+    context: Context,
+    title: String,
+    text: String?,
+    pendingIntent: PendingIntent
+): NotificationCompat.Builder {
+    val notificationBuilder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
+    notificationBuilder
+        .setContentTitle(title)
+        .setContentText(text)
+        .setOngoing(true)
+        .setContentIntent(pendingIntent)
+    return notificationBuilder
+}
+
 fun showCallNotification(
     context: Context, callId: String, callType: Int, callInitiatorId: Int,
     callInitiatorName: String, callOpponents: ArrayList<Int>, userInfo: String

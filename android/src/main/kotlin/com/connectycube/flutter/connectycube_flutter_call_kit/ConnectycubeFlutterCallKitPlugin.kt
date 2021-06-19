@@ -105,6 +105,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
                     val callOpponents = ArrayList((arguments["call_opponents"] as String)
                         .split(',')
                         .map { it.toInt() })
+                    val userInfo = arguments["user_info"] as String
 
                     val extras = Bundle()
 
@@ -113,6 +114,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
                     extras.putInt("caller_id", callInitiatorId)
                     extras.putString("caller_name", callInitiatorName)
                     extras.putIntegerArrayList("call_opponents", callOpponents)
+                    extras.putString("user_info", userInfo)
 
                     val serviceIntent = Intent(applicationContext!!, CallForegroundService::class.java)
                     serviceIntent.putExtras(extras)
