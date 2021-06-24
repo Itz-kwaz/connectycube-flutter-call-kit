@@ -86,6 +86,26 @@ class ConnectycubeFlutterCallKit {
     });
   }
 
+  static Future<void> showOngoingCallNotification({
+    required String? sessionId,
+    required int? callType,
+    required int? callerId,
+    required String? callerName,
+    required Set<int>? opponentsIds,
+    Map<String, String>? userInfo,
+  }) async {
+    if (!Platform.isAndroid) return;
+
+    return _channel.invokeMethod("showOngoingCallNotification", {
+      'session_id': sessionId,
+      'call_type': callType,
+      'caller_id': callerId,
+      'caller_name': callerName,
+      'call_opponents': opponentsIds!.join(','),
+      'user_info': userInfo != null ? jsonEncode(userInfo) : jsonEncode(Map()),
+    });
+  }
+
   static Future<void> reportCallAccepted({
     required String? sessionId,
   }) async {

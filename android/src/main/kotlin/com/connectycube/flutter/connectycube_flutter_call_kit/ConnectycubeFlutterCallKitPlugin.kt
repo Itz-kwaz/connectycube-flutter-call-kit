@@ -104,19 +104,29 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
                         .map { it.toInt() })
                     val userInfo = arguments["user_info"] as String
 
-                    val extras = Bundle()
+                    showOngoingCallNotification(
+                        applicationContext!!,
+                        callId,
+                        callType,
+                        callInitiatorId,
+                        callInitiatorName,
+                        callOpponents,
+                        userInfo
+                    )
 
-                    extras.putString("call_id", callId)
-                    extras.putInt("call_type", callType)
-                    extras.putInt("caller_id", callInitiatorId)
-                    extras.putString("caller_name", callInitiatorName)
-                    extras.putIntegerArrayList("call_opponents", callOpponents)
-                    extras.putString("user_info", userInfo)
+//                    val extras = Bundle()
+//
+//                    extras.putString("call_id", callId)
+//                    extras.putInt("call_type", callType)
+//                    extras.putInt("caller_id", callInitiatorId)
+//                    extras.putString("caller_name", callInitiatorName)
+//                    extras.putIntegerArrayList("call_opponents", callOpponents)
+//                    extras.putString("user_info", userInfo)
 
-                    val serviceIntent = Intent(applicationContext!!, CallForegroundService::class.java)
-                    serviceIntent.putExtras(extras)
+//                    val serviceIntent = Intent(applicationContext!!, CallForegroundService::class.java)
+//                    serviceIntent.putExtras(extras)
 
-                    toggleCallService(serviceIntent)
+//                    toggleCallService(serviceIntent)
 
                     result.success(null)
                 } catch (e: Exception) {
@@ -229,28 +239,28 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
         }
     }
 
-    private fun toggleCallService(serviceIntent: Intent){
-        if(isCallServiceRunning(CallForegroundService::class.java)){
-            val stoppedService = applicationContext?.stopService(serviceIntent)
-            Log.d("STOPPED SERVICE", stoppedService.toString())
-        }else{
-            applicationContext?.startService(serviceIntent)
-        }
-    }
-
-    private fun isCallServiceRunning(mClass: Class<CallForegroundService>): Boolean{
-        val manager: ActivityManager = applicationContext?.getSystemService(
-            Context.ACTIVITY_SERVICE
-        ) as ActivityManager
-
-        for(service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)){
-            if(mClass.name.equals(service.service.className)){
-                return true
-            }
-        }
-
-        return false
-    }
+//    private fun toggleCallService(serviceIntent: Intent){
+//        if(isCallServiceRunning(CallForegroundService::class.java)){
+//            val stoppedService = applicationContext?.stopService(serviceIntent)
+//            Log.d("STOPPED SERVICE", stoppedService.toString())
+//        }else{
+//            applicationContext?.startService(serviceIntent)
+//        }
+//    }
+//
+//    private fun isCallServiceRunning(mClass: Class<CallForegroundService>): Boolean{
+//        val manager: ActivityManager = applicationContext?.getSystemService(
+//            Context.ACTIVITY_SERVICE
+//        ) as ActivityManager
+//
+//        for(service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)){
+//            if(mClass.name.equals(service.service.className)){
+//                return true
+//            }
+//        }
+//
+//        return false
+//    }
 
     private fun registerCallStateReceiver() {
         localBroadcastManager = LocalBroadcastManager.getInstance(applicationContext!!)
