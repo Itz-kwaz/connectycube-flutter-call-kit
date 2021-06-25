@@ -1,6 +1,5 @@
 package com.connectycube.flutter.connectycube_flutter_call_kit
 
-import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -65,24 +64,11 @@ fun showOngoingCallNotification(
         userInfo
     )
 
-    // Add action when delete call notification
-    addCancelCallNotificationIntent(
-        context,
-        builder,
-        callId,
-        callType,
-        callInitiatorId,
-        callInitiatorName,
-        userInfo
-    )
-
     // Set small icon for notification
     setNotificationSmallIcon(context, builder)
 
     // Set notification color accent
     setNotificationColor(context, builder)
-
-//    createCallNotificationChannel(notificationManager, soundUri)
 
     notificationManager.notify(callId.hashCode(), builder.build())
 }
@@ -98,6 +84,7 @@ fun createOngoingCallNotification(
         .setContentTitle(title)
         .setContentText(text)
         .setOngoing(true)
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .setContentIntent(pendingIntent)
     return notificationBuilder
 }
@@ -177,6 +164,7 @@ fun showCallNotification(
         callType,
         callInitiatorId,
         callInitiatorName,
+        callOpponents,
         userInfo
     )
 
@@ -212,7 +200,6 @@ fun createCallNotification(
             .setAutoCancel(false)
             .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_CALL)
-            .setContentIntent(pendingIntent)
             .setSound(ringtone)
             .setVibrate(LongArray(30) { 1000L })
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -324,12 +311,13 @@ fun addCallFullScreenIntent(
 }
 
 fun addCancelCallNotificationIntent(
-    appContext: Context?,
+    context: Context,
     notificationBuilder: NotificationCompat.Builder,
     callId: String,
     callType: Int,
     callInitiatorId: Int,
     callInitiatorName: String,
+    opponents: ArrayList<Int>,
     userInfo: String
 ) {
     val bundle = Bundle()
@@ -337,17 +325,18 @@ fun addCancelCallNotificationIntent(
     bundle.putInt(EXTRA_CALL_TYPE, callType)
     bundle.putInt(EXTRA_CALL_INITIATOR_ID, callInitiatorId)
     bundle.putString(EXTRA_CALL_INITIATOR_NAME, callInitiatorName)
+    bundle.putIntegerArrayList(EXTRA_CALL_OPPONENTS, opponents)
     bundle.putString(EXTRA_CALL_USER_INFO, userInfo)
 
-    val deleteCallNotificationPendingIntent = PendingIntent.getBroadcast(
-        appContext,
+    val cancelCallNotificationPendingIntent = PendingIntent.getBroadcast(
+        context,
         callId.hashCode(),
-        Intent(appContext, EventReceiver::class.java)
-            .setAction(ACTION_CALL_NOTIFICATION_CANCELED)
+        Intent(context, EventReceiver::class.java)
+            .setAction(ACTION_CALL_NOTIFICATION_CLICKED)
             .putExtras(bundle),
         PendingIntent.FLAG_UPDATE_CURRENT
     )
-    notificationBuilder.setDeleteIntent(deleteCallNotificationPendingIntent)
+    notificationBuilder.setContentIntent(cancelCallNotificationPendingIntent)
 }
 
 fun createCallNotificationChannel(notificationManager: NotificationManagerCompat, sound: Uri) {

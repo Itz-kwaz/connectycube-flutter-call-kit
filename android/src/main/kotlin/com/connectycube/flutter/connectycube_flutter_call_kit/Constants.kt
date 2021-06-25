@@ -9,7 +9,8 @@ const val EXTRA_CALL_USER_INFO = "extra_call_user_info"
 
 const val ACTION_CALL_ACCEPT = "action_call_accept"
 const val ACTION_CALL_REJECT = "action_call_reject"
-const val ACTION_CALL_NOTIFICATION_CANCELED = "action_call_notification_canceled"
+const val ACTION_CALL_NOTIFICATION_CLICKED = "action_call_notification_clicked"
+const val ACTION_CALL_NOTIFICATION_CANCELLED = "action_call_notification_cancelled"
 const val ACTION_CALL_ENDED = "action_call_ended"
 
 const val CALL_TYPE_PLACEHOLDER = "Incoming %s call"

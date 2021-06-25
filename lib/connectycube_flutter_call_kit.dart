@@ -52,13 +52,16 @@ class ConnectycubeFlutterCallKit {
 
   static CallEventHandler? _onCallAccepted;
   static CallEventHandler? _onCallRejected;
+  static CallEventHandler? _onCallNotificationClicked;
 
   void init({
     CallEventHandler? onCallAccepted,
     CallEventHandler? onCallRejected,
+    CallEventHandler? onCallNotificationClicked,
   }) {
     _onCallAccepted = onCallAccepted;
     _onCallRejected = onCallRejected;
+    _onCallNotificationClicked = onCallNotificationClicked;
     initMessagesHandler();
   }
 
@@ -250,6 +253,28 @@ class ConnectycubeFlutterCallKit {
 
         if (_onCallRejected != null) {
           return _onCallRejected!(
+            map["session_id"],
+            map["call_type"],
+            map["caller_id"],
+            map["caller_name"],
+            (map["call_opponents"] as String)
+                .split(',')
+                .map((stringUserId) => int.parse(stringUserId))
+                .toSet(),
+            userInfoParsed,
+          );
+        }
+
+        break;
+      case "onCallNotificationCancelled":
+        var userInfo = map['user_info'];
+        var userInfoParsed;
+        if (userInfo != null) {
+          userInfoParsed = Map<String, String>.from(jsonDecode(userInfo));
+        }
+
+        if (_onCallNotificationClicked != null) {
+          return _onCallNotificationClicked!(
             map["session_id"],
             map["call_type"],
             map["caller_id"],

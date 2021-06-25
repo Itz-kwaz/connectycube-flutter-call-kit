@@ -1,7 +1,6 @@
 package com.connectycube.flutter.connectycube_flutter_call_kit
 
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,7 +8,6 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.WindowManager
 import androidx.annotation.Keep
 import androidx.annotation.NonNull
@@ -28,14 +26,19 @@ import io.flutter.plugin.common.PluginRegistry
 
 /** ConnectycubeFlutterCallKitPlugin */
 @Keep
-class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, PluginRegistry.NewIntentListener, ActivityAware, BroadcastReceiver() {
+class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
+    PluginRegistry.NewIntentListener, ActivityAware, BroadcastReceiver() {
+    private val TAG = "ConnectycubeFlutterCallKitPlugin"
     private var applicationContext: Context? = null
     private var mainActivity: Activity? = null
     private lateinit var channel: MethodChannel
     private lateinit var localBroadcastManager: LocalBroadcastManager
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        onAttachedToEngine(flutterPluginBinding.applicationContext, flutterPluginBinding.binaryMessenger)
+        onAttachedToEngine(
+            flutterPluginBinding.applicationContext,
+            flutterPluginBinding.binaryMessenger
+        )
         registerCallStateReceiver()
     }
 
@@ -53,7 +56,10 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
                         call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
-                    if (CALL_STATE_UNKNOWN != getCallState(callId)) {
+                    if (CALL_STATE_UNKNOWN != getCallState(callId) && CALL_STATE_PENDING != getCallState(
+                            callId
+                        )
+                    ) {
                         result.success(null)
                         return
                     }
@@ -88,7 +94,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
 
             "showOngoingCallNotification" -> {
                 try {
-                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> = call.arguments as Map<String, Any>
+                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
+                        call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
                     if (CALL_STATE_ACCEPTED != getCallState(callId)) {
@@ -114,20 +121,6 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
                         userInfo
                     )
 
-//                    val extras = Bundle()
-//
-//                    extras.putString("call_id", callId)
-//                    extras.putInt("call_type", callType)
-//                    extras.putInt("caller_id", callInitiatorId)
-//                    extras.putString("caller_name", callInitiatorName)
-//                    extras.putIntegerArrayList("call_opponents", callOpponents)
-//                    extras.putString("user_info", userInfo)
-
-//                    val serviceIntent = Intent(applicationContext!!, CallForegroundService::class.java)
-//                    serviceIntent.putExtras(extras)
-
-//                    toggleCallService(serviceIntent)
-
                     result.success(null)
                 } catch (e: Exception) {
                     result.error("ERROR", e.message, "")
@@ -136,7 +129,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
 
             "reportCallAccepted" -> {
                 try {
-                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> = call.arguments as Map<String, Any>
+                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
+                        call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
                     cancelCallNotification(applicationContext!!, callId)
 
@@ -150,7 +144,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
 
             "reportCallEnded" -> {
                 try {
-                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> = call.arguments as Map<String, Any>
+                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
+                        call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
                     processCallEnded(callId)
@@ -164,7 +159,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
 
             "getCallState" -> {
                 try {
-                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> = call.arguments as Map<String, Any>
+                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
+                        call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
                     result.success(getCallState(callId))
@@ -175,7 +171,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
 
             "setCallState" -> {
                 try {
-                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> = call.arguments as Map<String, Any>
+                    @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
+                        call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
                     val callState = arguments["call_state"] as String
 
@@ -239,34 +236,12 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
         }
     }
 
-//    private fun toggleCallService(serviceIntent: Intent){
-//        if(isCallServiceRunning(CallForegroundService::class.java)){
-//            val stoppedService = applicationContext?.stopService(serviceIntent)
-//            Log.d("STOPPED SERVICE", stoppedService.toString())
-//        }else{
-//            applicationContext?.startService(serviceIntent)
-//        }
-//    }
-//
-//    private fun isCallServiceRunning(mClass: Class<CallForegroundService>): Boolean{
-//        val manager: ActivityManager = applicationContext?.getSystemService(
-//            Context.ACTIVITY_SERVICE
-//        ) as ActivityManager
-//
-//        for(service: ActivityManager.RunningServiceInfo in manager.getRunningServices(Integer.MAX_VALUE)){
-//            if(mClass.name.equals(service.service.className)){
-//                return true
-//            }
-//        }
-//
-//        return false
-//    }
-
     private fun registerCallStateReceiver() {
         localBroadcastManager = LocalBroadcastManager.getInstance(applicationContext!!)
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_CALL_REJECT)
         intentFilter.addAction(ACTION_CALL_ACCEPT)
+        intentFilter.addAction(ACTION_CALL_NOTIFICATION_CLICKED)
         localBroadcastManager.registerReceiver(this, intentFilter)
     }
 
@@ -310,7 +285,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
         if (intent == null || TextUtils.isEmpty(intent.action)) return
 
         val action: String? = intent.action
-        if (ACTION_CALL_REJECT != action && ACTION_CALL_ACCEPT != action) {
+        if (ACTION_CALL_REJECT != action && ACTION_CALL_ACCEPT != action && ACTION_CALL_NOTIFICATION_CLICKED != action) {
             return
         }
         val callIdToProcess: String? = intent.getStringExtra(EXTRA_CALL_ID)
@@ -338,6 +313,15 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler, Plugi
 
                 val launchIntent = getLaunchIntent(context!!)
                 launchIntent?.action = ACTION_CALL_ACCEPT
+                context.startActivity(launchIntent)
+            }
+            ACTION_CALL_NOTIFICATION_CLICKED -> {
+                saveCallState(callIdToProcess!!, CALL_STATE_PENDING)
+
+                channel.invokeMethod("onCallNotificationCancelled", parameters)
+
+                val launchIntent = getLaunchIntent(context!!)
+                launchIntent?.action = ACTION_CALL_NOTIFICATION_CLICKED
                 context.startActivity(launchIntent)
             }
         }

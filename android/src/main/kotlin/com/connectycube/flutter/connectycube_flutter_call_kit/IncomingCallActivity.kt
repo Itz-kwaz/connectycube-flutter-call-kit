@@ -76,7 +76,7 @@ class IncomingCallActivity : Activity() {
                     return
                 }
                 when (action) {
-                    ACTION_CALL_NOTIFICATION_CANCELED, ACTION_CALL_REJECT, ACTION_CALL_ENDED -> {
+                    ACTION_CALL_NOTIFICATION_CLICKED, ACTION_CALL_REJECT, ACTION_CALL_ENDED -> {
                         finishAndRemoveTask()
                     }
                     ACTION_CALL_ACCEPT -> finishDelayed()
@@ -93,7 +93,7 @@ class IncomingCallActivity : Activity() {
 
     private fun registerCallStateReceiver() {
         val intentFilter = IntentFilter()
-        intentFilter.addAction(ACTION_CALL_NOTIFICATION_CANCELED)
+        intentFilter.addAction(ACTION_CALL_NOTIFICATION_CLICKED)
         intentFilter.addAction(ACTION_CALL_REJECT)
         intentFilter.addAction(ACTION_CALL_ACCEPT)
         intentFilter.addAction(ACTION_CALL_ENDED)
