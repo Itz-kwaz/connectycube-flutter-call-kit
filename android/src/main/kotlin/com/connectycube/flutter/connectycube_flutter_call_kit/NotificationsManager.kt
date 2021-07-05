@@ -197,7 +197,7 @@ fun createCallNotification(
             .setContentTitle(title)
             .setContentText(text)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setAutoCancel(false)
+            .setAutoCancel(true)
             .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_CALL)
             .setSound(ringtone)
