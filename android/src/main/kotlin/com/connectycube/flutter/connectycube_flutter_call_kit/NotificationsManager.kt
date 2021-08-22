@@ -105,22 +105,22 @@ fun showCallNotification(
     )
 
     val soundUri: Uri = Uri.parse(
-            "android.resource://" +
-                    context.applicationContext.getPackageName().toString() +
-                    "/" +
-                    D.raw.ring
+        "android.resource://" +
+                context.applicationContext.getPackageName().toString() +
+                "/" +
+                D.raw.ring
     )
 
     val ringtone: Uri = RingtoneManager.getActualDefaultRingtoneUri(
-            context.applicationContext,
-            RingtoneManager.TYPE_RINGTONE
+        context.applicationContext,
+        RingtoneManager.TYPE_RINGTONE
     )
 
     val callTypeTitle =
-            String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
+        String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
 
     val builder: NotificationCompat.Builder =
-            createCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent, soundUri)
+        createCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent,)
 
     // Add actions
     addCallRejectAction(
@@ -190,20 +190,18 @@ fun createCallNotification(
     title: String,
     text: String?,
     pendingIntent: PendingIntent,
-    ringtone: Uri
 ): NotificationCompat.Builder {
     val notificationBuilder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
     notificationBuilder
-            .setContentTitle(title)
-            .setContentText(text)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setAutoCancel(true)
-            .setOngoing(true)
-            .setCategory(NotificationCompat.CATEGORY_CALL)
-            .setSound(ringtone)
-            .setVibrate(LongArray(30) { 1000L })
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setTimeoutAfter(60000)
+        .setContentTitle(title)
+        .setContentText(text)
+        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        .setAutoCancel(true)
+        .setOngoing(true)
+        .setCategory(NotificationCompat.CATEGORY_CALL)
+        .setPriority(NotificationCompat.PRIORITY_MAX)
+        .setFlag(FLAG_INSISTENT, true)
+        .setTimeoutAfter(60000)
     return notificationBuilder
 }
 
@@ -226,12 +224,12 @@ fun addCallRejectAction(
     bundle.putString(EXTRA_CALL_USER_INFO, userInfo)
 
     val declinePendingIntent: PendingIntent = PendingIntent.getBroadcast(
-            context,
-            callId.hashCode(),
-            Intent(context, EventReceiver::class.java)
-                    .setAction(ACTION_CALL_REJECT)
-                    .putExtras(bundle),
-            PendingIntent.FLAG_UPDATE_CURRENT
+        context,
+        callId.hashCode(),
+        Intent(context, EventReceiver::class.java)
+            .setAction(ACTION_CALL_REJECT)
+            .putExtras(bundle),
+        PendingIntent.FLAG_UPDATE_CURRENT
     )
     val declineAction: NotificationCompat.Action = NotificationCompat.Action.Builder(
         context.resources.getIdentifier(
@@ -348,7 +346,7 @@ fun createCallNotificationChannel(notificationManager: NotificationManagerCompat
         )
 
         channel.enableVibration(true)
-        channel.setVibrationPattern(LongArray(30){1000L})
+        channel.setVibrationPattern(LongArray(30) { 1000L })
         channel.setSound(
             sound, AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
