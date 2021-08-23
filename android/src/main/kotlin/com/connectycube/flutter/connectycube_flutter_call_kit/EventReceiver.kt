@@ -16,6 +16,7 @@ class EventReceiver : BroadcastReceiver() {
 
         if (intent == null || TextUtils.isEmpty(intent.action)) return
 
+        val v: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         when (intent.action) {
             ACTION_CALL_REJECT -> {
                 val extras = intent.extras
@@ -26,6 +27,7 @@ class EventReceiver : BroadcastReceiver() {
                 val callOpponents = extras?.getIntegerArrayList(EXTRA_CALL_OPPONENTS)
                 val userInfo = extras?.getString(EXTRA_CALL_USER_INFO)
                 Log.i(TAG, "NotificationReceiver onReceive Call REJECT, callId: $callId")
+                v.cancel()
 
                 val broadcastIntent = Intent(ACTION_CALL_REJECT)
                 val bundle = Bundle()
@@ -52,6 +54,8 @@ class EventReceiver : BroadcastReceiver() {
                 val callOpponents = extras?.getIntegerArrayList(EXTRA_CALL_OPPONENTS)
                 val userInfo = extras?.getString(EXTRA_CALL_USER_INFO)
                 Log.i(TAG, "NotificationReceiver onReceive Call ACCEPT, callId: $callId")
+
+                v.cancel()
 
                 val broadcastIntent = Intent(ACTION_CALL_ACCEPT)
                 val bundle = Bundle()

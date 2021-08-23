@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.connectycube.flutter.connectycube_flutter_call_kit.utils.getColorizedText
 import com.connectycube.flutter.connectycube_flutter_call_kit.R as D
+import android.os.Vibrator;
 
 const val CALL_CHANNEL_ID = "calls_channel_id"
 const val CALL_CHANNEL_NAME = "Calls"
@@ -119,8 +120,20 @@ fun showCallNotification(
     val callTypeTitle =
         String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
 
+     val v: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+     val pattern = longArrayOf(0, 100, 1000)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // API 26 and above
+            v.vibrate(VibrationEffect.createWaveform(pattern, 0));
+        } else {
+            // Below API 26
+            v.vibrate(pattern, 0);
+        }
+
     val builder: NotificationCompat.Builder =
-        createCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent,)
+        createCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent)
 
     // Add actions
     addCallRejectAction(
