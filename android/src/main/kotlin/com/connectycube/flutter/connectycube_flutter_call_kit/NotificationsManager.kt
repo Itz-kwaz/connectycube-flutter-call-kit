@@ -123,17 +123,6 @@ fun showCallNotification(
     val callTypeTitle =
         String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
 
-     val v: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-     val pattern = longArrayOf(0, 100, 1000)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // API 26 and above
-            v.vibrate(VibrationEffect.createWaveform(pattern, 0));
-        } else {
-            // Below API 26
-            v.vibrate(pattern, 0);
-        }
 
     val builder: NotificationCompat.Builder =
         createCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent)
@@ -196,6 +185,19 @@ fun showCallNotification(
     val notification  = builder.build()
     notification.flags = FLAG_INSISTENT
     notificationManager.notify(callId.hashCode(), notification)
+
+    val v: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+    val pattern = longArrayOf(0, 100, 1000)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // API 26 and above
+        v.vibrate(VibrationEffect.createWaveform(pattern, 0));
+    } else {
+        // Below API 26
+        v.vibrate(pattern, 0);
+    }
+
 }
 
 fun getLaunchIntent(context: Context): Intent? {
@@ -363,8 +365,8 @@ fun createCallNotificationChannel(notificationManager: NotificationManagerCompat
             NotificationManager.IMPORTANCE_HIGH
         )
 
-        channel.enableVibration(true)
-        channel.setVibrationPattern(LongArray(30) { 1000L })
+       /* channel.enableVibration(true)
+        channel.setVibrationPattern(LongArray(30) { 0,500L })*/
         channel.setSound(
             sound, AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
