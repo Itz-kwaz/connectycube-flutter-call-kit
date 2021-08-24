@@ -369,7 +369,7 @@ fun createCallNotificationChannel(notificationManager: NotificationManagerCompat
         val channel = NotificationChannel(CALL_CHANNEL_ID, CALL_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
 
         channel.enableVibration(true)
-        channel.setVibrationPattern(LongArray(30) { 0,500L })
+        channel.setVibrationPattern(LongArray(30) { 1000L })
         channel.setSound(
             sound, AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
