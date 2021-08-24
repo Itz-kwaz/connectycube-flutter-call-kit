@@ -10,7 +10,6 @@ import android.graphics.Color
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -19,6 +18,8 @@ import com.connectycube.flutter.connectycube_flutter_call_kit.R as D
 import android.os.Vibrator
 import android.os.Build
 import android.os.VibrationEffect
+import androidx.core.app.NotificationCompat.FLAG_INSISTENT
+
 
 const val CALL_CHANNEL_ID = "calls_channel_id"
 const val CALL_CHANNEL_NAME = "Calls"
@@ -191,7 +192,10 @@ fun showCallNotification(
 
     createCallNotificationChannel(notificationManager, ringtone)
 
-    notificationManager.notify(callId.hashCode(), builder.build())
+
+    val notification  = builder.build()
+    notification.flags = FLAG_INSISTENT
+    notificationManager.notify(callId.hashCode(), notification)
 }
 
 fun getLaunchIntent(context: Context): Intent? {
@@ -204,7 +208,7 @@ fun createCallNotification(
     context: Context,
     title: String,
     text: String?,
-    pendingIntent: PendingIntent,
+    pendingIntent: PendingIntent
 ): NotificationCompat.Builder {
     val notificationBuilder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
     notificationBuilder
@@ -215,7 +219,6 @@ fun createCallNotification(
         .setOngoing(true)
         .setCategory(NotificationCompat.CATEGORY_CALL)
         .setPriority(NotificationCompat.PRIORITY_MAX)
-        .setFlag(FLAG_INSISTENT, true)
         .setTimeoutAfter(60000)
     return notificationBuilder
 }
