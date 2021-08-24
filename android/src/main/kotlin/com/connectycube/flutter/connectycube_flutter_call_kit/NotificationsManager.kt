@@ -23,6 +23,8 @@ import androidx.core.app.NotificationCompat.FLAG_INSISTENT
 
 const val CALL_CHANNEL_ID = "calls_channel_id"
 const val CALL_CHANNEL_NAME = "Calls"
+const val ONGOING_CALL_CHANNEL_ID = "ongoing_calls_channel_id"
+const val ONGOING_CALL_CHANNEL_NAME = "ongoing_Calls"
 
 
 fun cancelAllCallNotification(context: Context) {
@@ -53,8 +55,16 @@ fun showOngoingCallNotification(
     val callTypeTitle =
         String.format(ONGOING_CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
 
-    val builder: NotificationCompat.Builder =
-        createOngoingCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent)
+    val builder: NotificationCompat.Builder = createOngoingCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            ONGOING_CALL_CHANNEL_ID,
+            ONGOING_CALL_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        notificationManager.createNotificationChannel(channel)
+    }
 
     // Add actions
     addCallRejectAction(
@@ -83,7 +93,7 @@ fun createOngoingCallNotification(
     text: String?,
     pendingIntent: PendingIntent
 ): NotificationCompat.Builder {
-    val notificationBuilder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
+    val notificationBuilder = NotificationCompat.Builder(context, ONGOING_CALL_CHANNEL_ID)
     notificationBuilder
         .setContentTitle(title)
         .setContentText(text)
@@ -186,7 +196,7 @@ fun showCallNotification(
     notification.flags = FLAG_INSISTENT
     notificationManager.notify(callId.hashCode(), notification)
 
-    val v: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    val v: Vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     val pattern = longArrayOf(0, 100, 1000)
 
@@ -365,8 +375,8 @@ fun createCallNotificationChannel(notificationManager: NotificationManagerCompat
             NotificationManager.IMPORTANCE_HIGH
         )
 
-       /* channel.enableVibration(true)
-        channel.setVibrationPattern(LongArray(30) { 0,500L })*/
+        channel.enableVibration(true)
+        channel.setVibrationPattern(LongArray(30) { 0,500L })
         channel.setSound(
             sound, AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
