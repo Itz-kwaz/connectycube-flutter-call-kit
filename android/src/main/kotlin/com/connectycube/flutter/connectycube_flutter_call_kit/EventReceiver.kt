@@ -9,6 +9,8 @@ import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
+import android.os.Vibrator
+
 
 class EventReceiver : BroadcastReceiver() {
     private val TAG = "EventReceiver"
