@@ -57,7 +57,7 @@ class EventReceiver : BroadcastReceiver() {
                 val userInfo = extras?.getString(EXTRA_CALL_USER_INFO)
                 Log.i(TAG, "NotificationReceiver onReceive Call ACCEPT, callId: $callId")
 
-                v.cancel()
+//                v.cancel()
 
                 val broadcastIntent = Intent(ACTION_CALL_ACCEPT)
                 val bundle = Bundle()

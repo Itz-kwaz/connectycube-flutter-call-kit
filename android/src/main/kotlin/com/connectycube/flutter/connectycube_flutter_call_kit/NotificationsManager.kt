@@ -58,11 +58,7 @@ fun showOngoingCallNotification(
     val builder: NotificationCompat.Builder = createOngoingCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val channel = NotificationChannel(
-            ONGOING_CALL_CHANNEL_ID,
-            ONGOING_CALL_CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_HIGH
-        )
+        val channel = NotificationChannel(ONGOING_CALL_CHANNEL_ID, ONGOING_CALL_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
         notificationManager.createNotificationChannel(channel)
     }
 
@@ -196,7 +192,8 @@ fun showCallNotification(
     notification.flags = FLAG_INSISTENT
     notificationManager.notify(callId.hashCode(), notification)
 
-    val v: Vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    //Code for vibrations on device above android 0
+/*    val v: Vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     val pattern = longArrayOf(0, 100, 1000)
 
@@ -206,7 +203,7 @@ fun showCallNotification(
     } else {
         // Below API 26
         v.vibrate(pattern, 0);
-    }
+    }*/
 
 }
 
@@ -369,11 +366,7 @@ fun addCancelCallNotificationIntent(
 
 fun createCallNotificationChannel(notificationManager: NotificationManagerCompat, sound: Uri) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val channel = NotificationChannel(
-            CALL_CHANNEL_ID,
-            CALL_CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_HIGH
-        )
+        val channel = NotificationChannel(CALL_CHANNEL_ID, CALL_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
 
         channel.enableVibration(true)
         channel.setVibrationPattern(LongArray(30) { 0,500L })
